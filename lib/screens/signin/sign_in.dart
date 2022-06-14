@@ -38,7 +38,7 @@ class _SignInState extends State<SignIn> {
             alignment: Alignment(0, 0),
             child: Container(
               width: size.width * 0.9,
-              height: size.height * 0.4,
+              height: size.height * 0.38,
               child: Card(
                 elevation: 12,
                 child: Container(
@@ -58,26 +58,25 @@ class _SignInState extends State<SignIn> {
                           const SizedBox(
                             height: 20,
                           ),
-                          const Padding(
-                            padding: EdgeInsets.all(0.5),
-                            child: TextField(
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: TextFormField(
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
+                                isDense: true,
                                 border: OutlineInputBorder(),
                                 labelText: 'Mobile No',
                                 hintText: 'Enter Your Mobile',
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(0.5),
-                            child: TextField(
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: TextFormField(
                               obscureText: true,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
+                                isDense: true,
                                 border: OutlineInputBorder(),
                                 labelText: 'Otp',
                                 hintText: 'Enter Otp',
@@ -85,11 +84,13 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                       const SizedBox(
-                        height: 15,
+                        height: 5,
                       ),
                       Align(
                         alignment: Alignment.bottomLeft,
-                        child: ElevatedButton(
+                        child: Container(
+                           margin: EdgeInsets.only(left: 10.0),
+                          child: ElevatedButton(
                             onPressed: () => {
                               Navigator.pushNamed(context, '/home')},
                             child:const Text('SignIn'),
@@ -99,6 +100,7 @@ class _SignInState extends State<SignIn> {
                                 textStyle: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.normal)),
+                          ),
 
                         ),
                       )

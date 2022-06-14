@@ -19,13 +19,27 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
+        centerTitle: false,
         elevation: 0,
         // leading: IconButton(
         //   icon: Icon(Icons.menu), onPressed: () {
         //    SideNav();
         // },
         // ),
-        title: Text('Dashboard'),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'Dashboard',
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+            ), SizedBox(height: 5),
+            Text(
+              'Praveen Chakravarthy',
+              style: TextStyle(color: Colors.white, fontSize: 14.0),
+            )
+          ],
+        ),
       ),
       drawer: Theme(
         data: Theme.of(context).copyWith(

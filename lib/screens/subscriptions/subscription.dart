@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api/apis.dart';
+import 'package:flutter_app/values/dimens/dimensions.dart';
 
 class Subscription extends StatefulWidget {
   const Subscription({Key? key}) : super(key: key);
@@ -10,8 +11,9 @@ class Subscription extends StatefulWidget {
 
 class _SubscriptionState extends State<Subscription> {
   final ApiService _apiService = ApiService.create();
-  var check;
   List _subscriptionList = [];
+  String _mobileNo = '';
+  String _otpValue = '';
 
   @override
   void initState() {
@@ -51,7 +53,7 @@ class _SubscriptionState extends State<Subscription> {
         double c_width = MediaQuery.of(context).size.width * 0.9;
 
         return GestureDetector(
-          // onTap: () => _openCustomerSheet(_subscriptionList[i]),
+           onTap: () => _openCustomerSheet(context, _subscriptionList[i]),
 
           child: Container(
             // margin: EdgeInsets.all(12),
@@ -123,7 +125,7 @@ class _SubscriptionState extends State<Subscription> {
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: Colors.grey,
-                                      fontSize: 10),
+                                      fontSize: 12),
                                 )),
                           ],
                         ),
@@ -155,13 +157,13 @@ class _SubscriptionState extends State<Subscription> {
                   itemBuilder: (BuildContext context, int i) {
                     return ListTile(
                       title: Text(subscriptionServiceList[i]['serviceName'],maxLines: 1,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
                       subtitle: Text('service available count is'
                           ' ${subscriptionServiceList[i]['maxServiceCount'].toString()}',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
                       trailing: Text('Rs. '
                           ' ${subscriptionServiceList[i]['fixedCharge'].toString()}',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
                     );
                   },
                 ),
@@ -172,65 +174,182 @@ class _SubscriptionState extends State<Subscription> {
         },
       );
 
-  Widget setupAlertDialogContainer() {
-    return Container(
-      height: 300.0, // Change as per your requirement
-      width: 300.0, // Change as per your requirement
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text('Gujarat, India'),
+
+
+  _openCustomerSheet(Context, subscriptionList){
+    showModalBottomSheet<dynamic>(context: context,isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        builder: (BuildContext a) {
+
+          String paymentType = 'RazorPay';
+
+          return Wrap(
+            children: [
+              Container(
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
+                  child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
+                              child: Text(subscriptionList['name'],
+                                  style: titleStyle, textAlign: TextAlign.start),
+                            ),
+                          ),
+                          Align(
+                              alignment: Alignment.topLeft,
+                              child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
+                                child: Text('Rs. ${subscriptionList['exclusiveRate']}',
+                                    style: descStyle, textAlign: TextAlign.start),)
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                // contentPadding: EdgeInsets.symmetric(vertical: 30.0),
+                                isDense: true,
+                                border: OutlineInputBorder(),
+                                labelText: 'Customer Name',
+                                hintText: 'Enter Customer Name',
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: TextFormField(
+                              obscureText: false,
+                              keyboardType: TextInputType.number,
+                              // validator: (value) {
+                              //   if (value == null ||
+                              //       value.isEmpty ) {
+                              //     return 'Please enter valid Email';
+                              //   }
+                              //   return null;
+                              // },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                labelText: 'Email',
+                                hintText: 'Enter Customer Email',
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8),
+                            child: TextFormField(
+                              obscureText: false,
+                              keyboardType: TextInputType.number,
+                              maxLength: 10,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value.length < 10) {
+                                  return 'Please enter valid Mobile Number';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                labelText: 'Mobile No',
+                                hintText: 'Enter Your Mobile',
+                              ),
+                              onSaved: (value) {
+                                setState(() => _mobileNo = value!);
+                              },
+                            ),
+                          ),
+
+                          // Padding(
+                          //   padding: EdgeInsets.all(8),
+                          //   child: TextFormField(
+                          //     obscureText: true,
+                          //     maxLength: 5,
+                          //     keyboardType: TextInputType.number,
+                          //     validator: (value) {
+                          //       if (value == null ||
+                          //           value.isEmpty ||
+                          //           value.length < 4) {
+                          //         return 'Please enter valid OTP';
+                          //       }
+                          //       return null;
+                          //     },
+                          //     decoration: InputDecoration(
+                          //       border: OutlineInputBorder(),
+                          //       isDense: true,
+                          //       labelText: 'Otp',
+                          //       hintText: 'Enter Otp',
+                          //     ),
+                          //     onSaved: (value) {
+                          //       setState(() {
+                          //         _otpValue = value!;
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
+                          const Align(
+                            alignment: Alignment.topLeft,
+                            child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
+                              child: Text('Payment Type',
+                                  style: titleStyle, textAlign: TextAlign.start),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Padding(
+                              padding: EdgeInsets.all(8),
+                              child: DropdownButtonFormField(
+                                value: paymentType,
+                                icon: const Icon(Icons.arrow_downward),
+                                elevation: 2,
+                                style: const TextStyle(color: Colors.black),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    paymentType = newValue!;
+                                  });
+                                },
+                                items: <String>['RazorPay', 'PayU']
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),)
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(20),
+                            child: ElevatedButton(
+                              onPressed: () =>
+                              {
+
+                              },
+                              child: const Text('Pay Now'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.blueGrey[900],
+                                  minimumSize: Size.fromHeight(40),
+                                  textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.normal)),
+                            ),
+                          )
+                        ],
+                      )
+                  ),
+              )
+            ],
           );
-        },
-      ),
-    );
+        });
   }
 
-
-}
-
-
-_displayDialog(BuildContext context) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: false,
-    transitionDuration: Duration(milliseconds: 2000),
-    transitionBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(
-        opacity: animation,
-        child: ScaleTransition(
-          scale: animation,
-          child: child,
-        ),
-      );
-    },
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(20),
-          color: Colors.white,
-          child: Center(
-            child:Column(
-              mainAxisSize: MainAxisSize.min,
-              children:<Widget> [
-                Text('Hai This Is Full Screen Dialog', style: TextStyle(color: Colors.red, fontSize: 20.0),),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("DISMISS",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
 }
