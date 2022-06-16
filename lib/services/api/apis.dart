@@ -18,6 +18,12 @@ abstract class ApiService extends ChopperService {
   @Post(path: '/subscription-plans/sellers')
   Future<Response> subscriptionPlanList(@Body() Map<String, dynamic> data);
 
+  @Post(path: '/seller-coupons/validateSeller')
+  Future<Response> validateCoupon(@QueryMap() Map<String, dynamic> parameters);
+
+  @Get(path: '/subscription-plans?filter=')
+  Future<Response> getActivePlans(@QueryMap() Map<String, dynamic> parameters);
+
 
   static ApiService create() {
     final ioc = HttpClient();

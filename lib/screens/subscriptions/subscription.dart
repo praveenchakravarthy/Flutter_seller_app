@@ -3,17 +3,23 @@ import 'package:flutter_app/services/api/apis.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
 
 class Subscription extends StatefulWidget {
-  const Subscription({Key? key}) : super(key: key);
+  final int type;
+  const Subscription({Key? key, required this.type}) : super(key: key);
 
   @override
-  _SubscriptionState createState() => _SubscriptionState();
+  _SubscriptionState createState() => _SubscriptionState(type);
 }
 
 class _SubscriptionState extends State<Subscription> {
   final ApiService _apiService = ApiService.create();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   List _subscriptionList = [];
   String _mobileNo = '';
   String _otpValue = '';
+  bool _otpEnabled = false;
+  _SubscriptionState(this.type);
+  int type;
+
 
   @override
   void initState() {
@@ -25,6 +31,12 @@ class _SubscriptionState extends State<Subscription> {
     Map<String, dynamic> payload = {'sellerId': 24, 'clientId': 1};
     var res = await _apiService.subscriptionPlanList(payload);
     setState(() {_subscriptionList = res.body['plans'];});
+  }
+
+  void _showOtpField(bool visible) {
+    setState(() {
+      _otpEnabled = visible;
+    });
   }
 
   @override
@@ -92,7 +104,7 @@ class _SubscriptionState extends State<Subscription> {
                       IconButton(onPressed: () {
                         _serviceDialog(context, _subscriptionList[i]['subscriptionServiceDetail']);
                       },
-                          icon: const Icon(Icons.circle))
+                          icon: const Icon(Icons.info), color: Colors.grey)
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -151,22 +163,24 @@ class _SubscriptionState extends State<Subscription> {
             children: [
               SizedBox(
                 width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: subscriptionServiceList.length,
-                  itemBuilder: (BuildContext context, int i) {
-                    return ListTile(
-                      title: Text(subscriptionServiceList[i]['serviceName'],maxLines: 1,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
-                      subtitle: Text('service available count is'
-                          ' ${subscriptionServiceList[i]['maxServiceCount'].toString()}',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
-                      trailing: Text('Rs. '
-                          ' ${subscriptionServiceList[i]['fixedCharge'].toString()}',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
-                    );
-                  },
-                ),
+                child: Padding(padding: EdgeInsets.all(10),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: subscriptionServiceList.length,
+                    itemBuilder: (BuildContext context, int i) {
+                      return ListTile(
+                        title: Text(subscriptionServiceList[i]['serviceName'],maxLines: 1,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
+                        subtitle: Text('service available count is'
+                            ' ${subscriptionServiceList[i]['maxServiceCount'].toString()}',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                        trailing: Text('Rs. '
+                            ' ${subscriptionServiceList[i]['fixedCharge'].toString()}',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                      );
+                    },
+                  ),
+                )
               ),
               // Text('${subscriptionList['serviceName']}')
             ],
@@ -177,7 +191,9 @@ class _SubscriptionState extends State<Subscription> {
 
 
   _openCustomerSheet(Context, subscriptionList){
-    showModalBottomSheet<dynamic>(context: context,isScrollControlled: true,
+
+    showModalBottomSheet<dynamic>(context: context,
+        isScrollControlled: true,
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
@@ -187,167 +203,221 @@ class _SubscriptionState extends State<Subscription> {
           String paymentType = 'RazorPay';
 
           return Wrap(
-            children: [
-              Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(10),
-                  child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
-                              child: Text(subscriptionList['name'],
-                                  style: titleStyle, textAlign: TextAlign.start),
-                            ),
-                          ),
-                          Align(
-                              alignment: Alignment.topLeft,
-                              child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
-                                child: Text('Rs. ${subscriptionList['exclusiveRate']}',
-                                    style: descStyle, textAlign: TextAlign.start),)
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                // contentPadding: EdgeInsets.symmetric(vertical: 30.0),
-                                isDense: true,
-                                border: OutlineInputBorder(),
-                                labelText: 'Customer Name',
-                                hintText: 'Enter Customer Name',
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: TextFormField(
-                              obscureText: false,
-                              keyboardType: TextInputType.number,
-                              // validator: (value) {
-                              //   if (value == null ||
-                              //       value.isEmpty ) {
-                              //     return 'Please enter valid Email';
-                              //   }
-                              //   return null;
-                              // },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                                labelText: 'Email',
-                                hintText: 'Enter Customer Email',
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8),
-                            child: TextFormField(
-                              obscureText: false,
-                              keyboardType: TextInputType.number,
-                              maxLength: 10,
-                              validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    value.length < 10) {
-                                  return 'Please enter valid Mobile Number';
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                                labelText: 'Mobile No',
-                                hintText: 'Enter Your Mobile',
-                              ),
-                              onSaved: (value) {
-                                setState(() => _mobileNo = value!);
-                              },
-                            ),
-                          ),
+               children: [
+                 Container(
+                   margin: const EdgeInsets.all(10),
+                   padding: const EdgeInsets.all(10),
+                   child: SingleChildScrollView(
+                       child: Column(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         children: [
+                           Align(
+                             alignment: Alignment.topLeft,
+                             child:Padding(padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                               child: Text(subscriptionList['name'],
+                                   style: titleStyle, textAlign: TextAlign.start),
+                             ),
+                           ),
+                           Align(
+                               alignment: Alignment.topLeft,
+                               child:Padding(padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                                 child: Text('Rs. ${subscriptionList['exclusiveRate']}',
+                                     style: const TextStyle(fontSize: 14,
+                                         fontWeight: FontWeight.w400,
+                                         color: Color.fromARGB(255, 128, 128, 128),
+                                         letterSpacing: 0.05
+                                     ), textAlign: TextAlign.start),
+                               )
+                           ),
+                           Padding(
+                             padding: EdgeInsets.all(8),
+                             child: TextField(
+                               keyboardType: TextInputType.number,
+                               decoration: InputDecoration(
+                                 // contentPadding: EdgeInsets.symmetric(vertical: 30.0),
+                                   isDense: true,
+                                   border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
+                                       borderSide:BorderSide.none),
+                                   fillColor:Colors.grey.withOpacity(0.1),
+                                   filled:true,
+                                   hintText: 'Customer Name',
+                                   hintStyle: TextStyle(
+                                       fontSize: 14
+                                   )
+                               ),
+                             ),
+                           ),
+                           Padding(
+                             padding: const EdgeInsets.all(8),
+                             child: TextFormField(
+                               obscureText: false,
+                               keyboardType: TextInputType.number,
+                               // validator: (value) {
+                               //   if (value == null ||
+                               //       value.isEmpty ) {
+                               //     return 'Please enter valid Email';
+                               //   }
+                               //   return null;
+                               // },
+                               decoration: InputDecoration(
+                                   border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
+                                       borderSide:BorderSide.none),
+                                   fillColor:Colors.grey.withOpacity(0.1),
+                                   filled:true,
+                                   isDense: true,
+                                   hintText: 'Customer Email',
+                                   hintStyle: TextStyle(
+                                       fontSize: 14
+                                   )
+                               ),
+                             ),
+                           ),
+                           Padding(
+                             padding: EdgeInsets.all(8),
+                             child: TextFormField(
+                               obscureText: false,
+                               keyboardType: TextInputType.number,
+                               maxLength: 10,
+                               validator: (value) {
+                                 if (value == null ||
+                                     value.isEmpty ||
+                                     value.length < 10) {
+                                   return 'Please enter valid Mobile Number';
+                                 }
+                                 return null;
+                               },
+                               decoration: InputDecoration(
+                                 border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
+                                     borderSide:BorderSide.none),
+                                 fillColor:Colors.grey.withOpacity(0.1),
+                                 filled:true,
+                                 isDense: true,
+                                 hintText: 'Customer Mobile',
+                                 hintStyle: TextStyle(
+                                     fontSize: 14
+                                 ),
+                                 counterText: "",
+                                 suffixIcon: type == 1 ? IconButton(
+                                   icon: Icon(Icons.send), onPressed: () {
+                                   // final snackBar = SnackBar(
+                                   //   content: const Text('Touched'),
+                                   //   behavior: SnackBarBehavior.floating,
+                                   //   action: SnackBarAction(
+                                   //     label: 'Undo',
+                                   //     onPressed: () {
+                                   //       // Some code to undo the change.
+                                   //     },
+                                   //   ),
+                                   // );
+                                   // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                          // Padding(
-                          //   padding: EdgeInsets.all(8),
-                          //   child: TextFormField(
-                          //     obscureText: true,
-                          //     maxLength: 5,
-                          //     keyboardType: TextInputType.number,
-                          //     validator: (value) {
-                          //       if (value == null ||
-                          //           value.isEmpty ||
-                          //           value.length < 4) {
-                          //         return 'Please enter valid OTP';
-                          //       }
-                          //       return null;
-                          //     },
-                          //     decoration: InputDecoration(
-                          //       border: OutlineInputBorder(),
-                          //       isDense: true,
-                          //       labelText: 'Otp',
-                          //       hintText: 'Enter Otp',
-                          //     ),
-                          //     onSaved: (value) {
-                          //       setState(() {
-                          //         _otpValue = value!;
-                          //       });
-                          //     },
-                          //   ),
-                          // ),
-                          const Align(
-                            alignment: Alignment.topLeft,
-                            child:Padding(padding: EdgeInsets.only(left: 8, top: 5, bottom: 5),
-                              child: Text('Payment Type',
-                                  style: titleStyle, textAlign: TextAlign.start),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                              padding: EdgeInsets.all(8),
-                              child: DropdownButtonFormField(
-                                value: paymentType,
-                                icon: const Icon(Icons.arrow_downward),
-                                elevation: 2,
-                                style: const TextStyle(color: Colors.black),
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  isDense: true,
-                                ),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    paymentType = newValue!;
-                                  });
-                                },
-                                items: <String>['RazorPay', 'PayU']
-                                    .map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),)
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(20),
-                            child: ElevatedButton(
-                              onPressed: () =>
-                              {
+                                   setState(() {
+                                     _otpEnabled = true;
+                                   });
 
-                              },
-                              child: const Text('Pay Now'),
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.blueGrey[900],
-                                  minimumSize: Size.fromHeight(40),
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal)),
-                            ),
-                          )
-                        ],
-                      )
-                  ),
-              )
-            ],
+
+                                 },
+                                 ) : null,
+                               ),
+                               // onSaved: (value) {
+                               //   setState(() => _mobileNo = value!);
+                               // },
+                             ),
+                           ),
+                           Visibility(
+                             visible: _otpEnabled,
+                             child: Padding(
+                               padding: EdgeInsets.all(8),
+                               child: TextFormField(
+                                 obscureText: true,
+                                 maxLength: 5,
+                                 keyboardType: TextInputType.number,
+                                 validator: (value) {
+                                   if (value == null ||
+                                       value.isEmpty ||
+                                       value.length < 4) {
+                                     return 'Please enter valid OTP';
+                                   }
+                                   return null;
+                                 },
+                                 decoration: InputDecoration(
+                                   border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
+                                       borderSide:BorderSide.none),
+                                   fillColor:Colors.grey.withOpacity(0.1),
+                                   filled:true,
+                                   isDense: true,
+                                   hintText: 'Enter Otp',
+                                   hintStyle: TextStyle(
+                                       fontSize: 14
+                                   ),
+                                   counterText: "",
+                                 ),
+                                 onSaved: (value) {
+                                   setState(() {
+                                     // _otpValue = value!;
+                                   });
+                                 },
+                               ),
+                             ),
+                           ),
+                           const SizedBox(height: 5),
+                           const Align(
+                             alignment: Alignment.topLeft,
+                             child:Padding(padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                               child: Text('Payment Type',
+                                   style: titleStyle, textAlign: TextAlign.start),
+                             ),
+                           ),
+                           const SizedBox(height: 5),
+                           Padding(
+                               padding: EdgeInsets.all(8),
+                               child: DropdownButtonFormField(
+                                 value: paymentType,
+                                 icon: const Icon(Icons.arrow_drop_down_circle_outlined ),
+                                 elevation: 2,
+                                 style: const TextStyle(color: Colors.black),
+                                 decoration: InputDecoration(
+                                   border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
+                                       borderSide:BorderSide.none),
+                                   fillColor:Colors.grey.withOpacity(0.1),
+                                   filled:true,
+                                   isDense: true,
+                                 ),
+                                 onChanged: (String? newValue) {
+                                   setState(() {
+                                     paymentType = newValue!;
+                                   });
+                                 },
+                                 items: <String>['RazorPay', 'PayU']
+                                     .map<DropdownMenuItem<String>>((String value) {
+                                   return DropdownMenuItem<String>(
+                                     value: value,
+                                     child: Text(value),
+                                   );
+                                 }).toList(),)
+                           ),
+                           Padding(
+                             padding: EdgeInsets.all(20),
+                             child: ElevatedButton(
+                               onPressed: () =>
+                               {
+
+                               },
+                               child: const Text('Pay Now'),
+                               style: ElevatedButton.styleFrom(
+                                   primary: Colors.blueGrey[900],
+                                   minimumSize: Size.fromHeight(40),
+                                   textStyle: const TextStyle(
+                                       fontSize: 15,
+                                       fontWeight: FontWeight.normal)),
+                             ),
+                           )
+                         ],
+                       )
+                   ),
+                 )
+               ],
           );
         });
   }
