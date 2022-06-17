@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_app/screens/digital_sale/subscription.dart';
 import 'package:flutter_app/screens/plans/plans.dart';
-import 'package:flutter_app/screens/subscriptions/subscription.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -14,23 +15,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
+  final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
+      key: _scaffold,
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         centerTitle: false,
         elevation: 0,
-        // leading: IconButton(
-        //   icon: Icon(Icons.menu), onPressed: () {
-        //    SideNav();
-        // },
-        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.dashboard, size: 30,), onPressed: () {
+           _scaffold.currentState!.openDrawer();
+          },
+        ),
         title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
@@ -65,54 +66,69 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: Text('Stocks'),
               onTap: () {
+                Navigator.popAndPushNamed(context, '/stocks');
               },
               leading: IconButton(
                 icon: Icon(Icons.pending),
                 onPressed: () {},
               ),
             ),
-            Divider(height: 0.1),
+            const Divider(height: 0.1),
             ListTile(
-              title: Text('Sold Subscription'),
+              title: const Text('Sold Subscription'),
+              onTap: (){
+                Navigator.popAndPushNamed(context, '/sold_subscription');
+              },
               leading: IconButton(
-                icon: Icon(Icons.subscriptions),
+                icon: const Icon(Icons.subscriptions),
                 onPressed: () {
-                  print('hello');
+                  Navigator.popAndPushNamed(context, '/sold_subscription');
                 },
               ),
             ),
-            Divider(height: 0.1),
+            const Divider(height: 0.1),
+            ListTile(
+              title: Text('Sub-Seller'),
+              onTap: () {
+                Navigator.popAndPushNamed(context, '/stocks');
+              },
+              leading: IconButton(
+                icon: Icon(Icons.pending),
+                onPressed: () {},
+              ),
+            ),
+            const Divider(height: 0.1),
             ListTile(
               title: Text('Settlement'),
               leading: IconButton(
                 icon: Icon(Icons.monetization_on),
                 onPressed: () {
-                  print('hello');
                 },
               ),
             ),
-            Divider(height: 0.1),
+            const Divider(height: 0.1),
             ListTile(
               title: Text('Support'),
               leading: IconButton(
                 icon: Icon(Icons.support),
                 onPressed: () {
-                  print('hello');
                 },
               ),
             ),
-            Divider(height: 0.1),
+            const Divider(height: 0.1),
             ListTile(
-              title: Text('Logout'),
+              onTap: (){
+                _openLogoutDialog(context);
+              },
+              title: const Text('Logout'),
               leading: IconButton(
                 icon: Icon(Icons.logout),
                 onPressed: () {
-                  print('hello');
                 },
               ),
             ),
-            Divider(height: 0.1),
-            Padding(padding: EdgeInsets.all(16),
+            const Divider(height: 0.1),
+            const Padding(padding: EdgeInsets.all(16),
             child: Text(
               'Version 1.0'
             ),)
@@ -123,6 +139,21 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _homeContent()
     );
   }
+
+//   Future<void> scanQR() async {
+//     String barcodeScanRes;
+//     try {
+//       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+//           '#ff6666', 'Cancel', true, ScanMode.QR);
+//       print(barcodeScanRes);
+//     } on PlatformException {
+//       barcodeScanRes = 'Failed to get platform version.';
+//     }
+// //barcode scanner flutter ant
+//     setState(() {
+//      _scanBarcode = barcodeScanRes;
+//     });
+//   }
 
  /*Home Body*/
   Widget _homeContent(){
@@ -168,20 +199,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         elevation: 2,
                                         color: Colors.white,
                                         child: Column(
-                                          children: [
-                                            const SizedBox(
+                                          children: const [
+                                             SizedBox(
                                               height: 20,
                                             ),
-                                            Image.network(
-                                              'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png',
-                                              fit: BoxFit.fill,
-                                              height: 30,
-                                              width: 30,
-                                            ),
-                                            const SizedBox(
+                                            Icon(Icons.report),
+                                            SizedBox(
                                               height: 20,
                                             ),
-                                            const Text('Report', style: TextStyle(
+                                            Text('Report', style: TextStyle(
                                                 color: Colors.black),),
                                           ],
                                         ),
@@ -192,7 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        // scanQR();
+                                      },
                                       child: Container(
                                         decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(2),
@@ -203,20 +231,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                           elevation: 2,
                                           color: Colors.white,
                                           child: Column(
-                                            children: [
-                                              const SizedBox(
+                                            children: const [
+                                              SizedBox(
                                                 height: 20,
                                               ),
-                                              Image.network(
-                                                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png',
-                                                fit: BoxFit.fill,
-                                                height: 30,
-                                                width: 30,
-                                              ),
-                                              const SizedBox(
+                                              Icon(Icons.qr_code),
+                                              SizedBox(
                                                 height: 20,
                                               ),
-                                              const Text('Scan', style: TextStyle(
+                                              Text('Scan', style: TextStyle(
                                                   color: Colors.black),),
                                             ],
                                           ),
@@ -242,20 +265,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                           elevation: 2,
                                           color: Colors.white,
                                           child: Column(
-                                            children: [
-                                              const SizedBox(
+                                            children: const [
+                                              SizedBox(
                                                 height: 20,
                                               ),
-                                              Image.network(
-                                                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png',
-                                                fit: BoxFit.fill,
-                                                height: 30,
-                                                width: 30,
-                                              ),
-                                              const SizedBox(
+                                              Icon(Icons.point_of_sale),
+                                              SizedBox(
                                                 height: 20,
                                               ),
-                                              const Text('Digital Sale', style: TextStyle(
+                                              Text('Digital Sale', style: TextStyle(
                                                   color: Colors.black),
                                               ),
                                             ],
@@ -314,8 +332,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontSize: 15,
                                             fontWeight: FontWeight.normal)),
                                   ),
-                                ))
-                          ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ), //variable above
@@ -330,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               margin: EdgeInsets.only(top: 20),
               width: size.width * 0.93,
-              height: size.height * 0.4,
+              height: size.height * 0.35,
               child: Card(
                 elevation: 2,
                 child: Container(
@@ -355,13 +374,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               children: [
                                 CircularPercentIndicator(
-                                  radius: 60.0,
-                                  lineWidth: 4.0,
+                                  radius: 30.0,
+                                  lineWidth: 5.0,
                                   percent: 0.10,
                                   center: new Text("10%"),
-                                  backgroundColor: Colors.grey[300],
+                                  backgroundColor: (Colors.grey[300])!,
                                   circularStrokeCap: CircularStrokeCap.round,
-                                  progressColor: Colors.grey[900],
+                                  progressColor: Colors.blueGrey,
                                 ),
                                 const SizedBox(
                                   height: 20,
@@ -380,13 +399,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 children: [
                                   CircularPercentIndicator(
-                                    radius: 60.0,
-                                    lineWidth: 4.0,
-                                    percent: 0.10,
-                                    center: new Text("60%"),
-                                    backgroundColor: Colors.grey[300],
+                                    radius: 30.0,
+                                    lineWidth: 5.0,
+                                    percent: 0.60,
+                                    center: new Text("6000"),
+                                    backgroundColor: (Colors.grey[300])!,
                                     circularStrokeCap: CircularStrokeCap.round,
-                                    progressColor: Colors.grey[900],
+                                    progressColor: Colors.blueGrey,
                                   ),
                                   const SizedBox(
                                     height: 20,
@@ -405,13 +424,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 children: [
                                   CircularPercentIndicator(
-                                    radius: 60.0,
-                                    lineWidth: 4.0,
-                                    percent: 0.10,
-                                    center: new Text("10%"),
-                                    backgroundColor: Colors.grey[300],
+                                    radius: 30.0,
+                                    lineWidth: 5.0,
+                                    percent: 0.40,
+                                    center: new Text("40"),
+                                    backgroundColor: (Colors.grey[300])!,
                                     circularStrokeCap: CircularStrokeCap.round,
-                                    progressColor: Colors.grey[900],
+                                    progressColor: Colors.blueGrey,
                                   ),
                                   const SizedBox(
                                     height: 20,
@@ -537,8 +556,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
+  _openLogoutDialog(context){
+    showDialog(context: context, builder: (BuildContext a) {
+      return AlertDialog(
+        title: const Text('Logout', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+        ),
+        content: const Text('Are you sure want to exit from application right now',
+        style: TextStyle(fontSize: 12),
+        ),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              child: Container(
+                width: 80,
+                height: 35,
+                color: Colors.blueGrey,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context, 'Yes'),
+                  child: const Text('Yes', style: TextStyle(
+                        color: Colors.white
+                    ),
+                  ),
+                ),
+              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            child: Container(
+              width: 80,
+              height: 35,
+              color: Colors.grey[300],
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, 'No'),
+                child: const Text('No', style: TextStyle(
+                    color: Colors.black
+                 ),
+                ),
+              ),
+            )
+          )
+        ],
+      );
+    });
+  }
 
-  _bottomSheet(Context){
+
+  _bottomSheet(context){
    showModalBottomSheet<dynamic>(context: context,isScrollControlled: true,
        backgroundColor: Colors.white, builder: (BuildContext a) {
      return Wrap(

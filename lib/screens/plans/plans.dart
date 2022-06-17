@@ -118,10 +118,10 @@ class _PlansState extends State<Plans> {
                   child: Card(
                     margin: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
-                    elevation: 2,
+                    elevation: 1,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.black12, width: 1)),
+                        borderRadius: BorderRadius.circular(6),
+                        side: BorderSide(color: Colors.black12, width: 0.5)),
                     color: selectedIndex == i
                         ? const Color.fromARGB(255, 246, 246, 246)
                         : null,

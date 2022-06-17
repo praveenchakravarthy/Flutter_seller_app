@@ -2,10 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/screens/home/home_screen.dart';
 import 'package:flutter_app/screens/signin/sign_in.dart';
+import 'package:flutter_app/screens/sold_subscriptions/sold_subscription.dart';
+import 'package:flutter_app/screens/stocks/stocks.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+
+final ThemeData _themeData = ThemeData(
+    brightness: Brightness.light,
+    colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blueGrey)
+        .copyWith(secondary: Colors.white),
+    primaryColor: Colors.blueGrey,
+    fontFamily: 'poppins_regular',
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.grey.shade900,
+      elevation: 0,
+      centerTitle: true,
+    ));
 
 
 class MyApp extends StatelessWidget {
@@ -19,13 +34,13 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'My App',
-      theme: ThemeData(
-        backgroundColor: Colors.white
-      ),
+      title: 'Seller App',
+      theme: _themeData,
       routes: {
         '/': (context) => const SignIn(),
         '/home': (context) => const HomeScreen(),
+        '/stocks': (context) => const Stocks(),
+        '/sold_subscription': (context) => const SoldSubscription()
         // '/subscription': (context) => const Subscription(),
       },
     );
