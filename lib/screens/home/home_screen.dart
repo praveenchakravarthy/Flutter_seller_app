@@ -164,9 +164,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Divider(height: 0.1),
                 ListTile(
                   title: Text('Support'),
+                  onTap: (){
+                    Navigator.pushNamed(context, '/support');
+                  },
                   leading: IconButton(
                     icon: Icon(Icons.support),
                     onPressed: () {
+                      Navigator.pushNamed(context, '/support');
                     },
                   ),
                 ),
@@ -201,21 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
       SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     });
   }
-
-//   Future<void> scanQR() async {
-//     String barcodeScanRes;
-//     try {
-//       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-//           '#ff6666', 'Cancel', true, ScanMode.QR);
-//       print(barcodeScanRes);
-//     } on PlatformException {
-//       barcodeScanRes = 'Failed to get platform version.';
-//     }
-// //barcode scanner flutter ant
-//     setState(() {
-//      _scanBarcode = barcodeScanRes;
-//     });
-//   }
 
  /*Home Body*/
   Widget _homeContent(){

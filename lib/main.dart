@@ -9,6 +9,7 @@ import 'package:flutter_app/screens/sold_subscriptions/sold_subscription.dart';
 import 'package:flutter_app/screens/stocks/stocks.dart';
 import 'package:flutter_app/screens/sub_seller/onboard_seller.dart';
 import 'package:flutter_app/screens/sub_seller/sub_seller.dart';
+import 'package:flutter_app/screens/support/support.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/onboard_seller': (context) => const OnboardSeller(),
         '/settlement': (context) => const Settlement(),
         '/earnings': (context) => const Earnings(),
+        '/support': (context) => const Support(),
       },
     );
   }

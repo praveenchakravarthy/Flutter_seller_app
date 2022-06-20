@@ -98,7 +98,8 @@ class _EarningsState extends State<Earnings> {
                   const Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                        'INCENTIVE FOR SUBSCRIPTION 1001'
+                        'INCENTIVE FOR SUBSCRIPTION 1001',
+                      style: TextStyle(fontSize: 14),
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -125,7 +126,7 @@ class _EarningsState extends State<Earnings> {
                                 child:  Text('INCENTIVE',
                                   style: TextStyle(
                                       color: Colors.grey,
-                                    fontSize: 12
+                                    fontSize: 10
                                   ),
                                 ),
                               ),
