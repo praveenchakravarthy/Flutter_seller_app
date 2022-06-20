@@ -216,126 +216,136 @@ class _PlansState extends State<Plans> {
   );
 
   void _openPaymentDialog(BuildContext context) {
-    showDialog(context: context, builder: (BuildContext context) {
-                int type = 0;
-                return SimpleDialog(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-                                child: Text(
-                                  'CAR BASIC', style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0.05
-                                ),
-                                ),
-                              ),
-                            ),
-                            const Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 16, right: 16),
-                                child: Text(
-                                  'Rs. 1990', style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0.05
-                                ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                    child: GestureDetector(
-                                      onTap: () => {
-                                        setState(() {
-                                          type = 1;
-                                        }),
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: OutlinedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              type = 1;
-                                            });
-                                          },
-                                          child: const Padding(padding: EdgeInsets.all(10),
-                                            child: Text('Cash', style: TextStyle(color: Colors.black, fontSize: 15),),
-                                          ),
-                                          style: OutlinedButton.styleFrom(
-                                            backgroundColor: type == 1 ? Colors.blueGrey : null,
-                                            side: const BorderSide(width: 0.2, color: Colors.grey),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                ),
-                                const SizedBox(width: 15),
-
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => {
-                                    setState(() {
-                                    type = 2;
-                                    }),
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: OutlinedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            type = 2;
-                                          });
-                                        },
-                                        child: const Padding(padding: EdgeInsets.all(10),
-                                          child: Text('Online', style: TextStyle(color: Colors.black, fontSize: 15),),
-                                        ),
-                                        style: OutlinedButton.styleFrom(
-                                          backgroundColor: type == 2 ? Colors.blueGrey : null,
-                                          side: const BorderSide(width: 0.2, color: Colors.grey),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ),
-
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () =>
-                              {
-                              },
-                              child: const Text('Confirm'),
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.blueGrey[900],
-                                  minimumSize: Size.fromHeight(40),
-                                  shadowColor: Colors.white,
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal)),
-                            ),
-                          ],
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          int type = 0;
+          return SimpleDialog(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      const Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, top: 8, bottom: 8),
+                          child: Text(
+                            'CAR BASIC',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.05),
+                          ),
                         ),
                       ),
-                    )
-                  ],
-                );
-          });
-       }
+                      const Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 16, right: 16),
+                          child: Text(
+                            'Rs. 1990',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.05),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                              child: GestureDetector(
+                            onTap: () => {
+                              setState(() {
+                                type = 1;
+                              }),
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    type = 1;
+                                  });
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    'Cash',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 15),
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor:
+                                      type == 1 ? Colors.blueGrey : null,
+                                  side: const BorderSide(
+                                      width: 0.2, color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          )),
+                          const SizedBox(width: 15),
+                          Expanded(
+                              child: GestureDetector(
+                            onTap: () => {
+                              setState(() {
+                                type = 2;
+                              }),
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    type = 2;
+                                  });
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    'Online',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 15),
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor:
+                                      type == 2 ? Colors.blueGrey : null,
+                                  side: const BorderSide(
+                                      width: 0.2, color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          )),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => {},
+                        child: const Text('Confirm'),
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.blueGrey[900],
+                            minimumSize: Size.fromHeight(40),
+                            shadowColor: Colors.white,
+                            textStyle: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.normal)),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          );
+        });
+  }
 }

@@ -15,7 +15,6 @@ class _StocksState extends State<Stocks> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: false,
         backgroundColor: Colors.blueGrey[900],

@@ -16,128 +16,190 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
+  String subSeller = 'Me';
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffold,
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey,
-        centerTitle: false,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.dashboard, size: 30,), onPressed: () {
-           _scaffold.currentState!.openDrawer();
-          },
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              'Dashboard',
-              style: TextStyle(color: Colors.white, fontSize: 16.0),
-            ), SizedBox(height: 5),
-            Text(
-              'Praveen Chakravarthy',
-              style: TextStyle(color: Colors.white, fontSize: 14.0),
-            )
-          ],
-        ),
+    return WillPopScope(
+      onWillPop: () async {
+        onBackPressed(); // Action to perform on back pressed
+        return false;
+      },
+      child: Scaffold(
+          key: _scaffold,
+          appBar: AppBar(
+            backgroundColor: Colors.blueGrey,
+            centerTitle: false,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.dashboard, size: 30,), onPressed: () {
+              _scaffold.currentState!.openDrawer();
+            },
+            ),
+            title: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(flex: 3,
+                      child: Text(
+                          'Dashboard',
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Theme(
+                          data: ThemeData.dark(),
+                          child: Container(
+                            height: 40,
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: true, //just add this property as true
+                              value: subSeller,
+                              icon: Icon(Icons.arrow_drop_down),
+                              elevation: 0,
+                              decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.blueGrey))),
+                              style: const TextStyle(color: Colors.black),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  subSeller = newValue!;
+                                });
+                              },
+                              items: <String>['Me','Praveen Chakravarthy', 'Renuka']
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value,
+                                    maxLines: 1,
+                                    style: TextStyle(color: Colors.white),),
+                                );
+                              }).toList(),
+                            ),
+                          )
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Praveen Chakravarthy',
+                  style: TextStyle(color: Colors.white, fontSize: 14.0),
+                ),
+              ],
+            ),
+          ),
+          drawer: Theme(
+            data: Theme.of(context).copyWith(
+                canvasColor: Colors.white
+            ), child: Drawer(
+            elevation: 2,
+            child: Column(
+              children: <Widget>[
+                const UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey
+                  ),
+                  accountName: Text('Praveen Chakravarthy'),
+                  accountEmail: Text('praveen.chakravarthy@readyassist.in'),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Text('Pc'),
+                  ),
+                ),
+                ListTile(
+                  title: Text('Stocks'),
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, '/stocks');
+                  },
+                  leading: IconButton(
+                    icon: Icon(Icons.pending),
+                    onPressed: () {},
+                  ),
+                ),
+                const Divider(height: 0.1),
+                ListTile(
+                  title: const Text('Sold Subscription'),
+                  onTap: (){
+                    Navigator.popAndPushNamed(context, '/sold_subscription');
+                  },
+                  leading: IconButton(
+                    icon: const Icon(Icons.subscriptions),
+                    onPressed: () {
+                      Navigator.popAndPushNamed(context, '/sold_subscription');
+                    },
+                  ),
+                ),
+                const Divider(height: 0.1),
+                ListTile(
+                  title: Text('Sub-Seller'),
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, '/sub_seller');
+                  },
+                  leading: IconButton(
+                    icon: Icon(Icons.pending),
+                    onPressed: () {},
+                  ),
+                ),
+                const Divider(height: 0.1),
+                ListTile(
+                  title: Text('Settlement'),
+                  onTap: (){
+                    Navigator.pushNamed(context, '/settlement');
+                  },
+                  leading: IconButton(
+                    icon: Icon(Icons.monetization_on),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/settlement');
+                    },
+                  ),
+                ),
+                const Divider(height: 0.1),
+                ListTile(
+                  title: Text('Support'),
+                  leading: IconButton(
+                    icon: Icon(Icons.support),
+                    onPressed: () {
+                    },
+                  ),
+                ),
+                const Divider(height: 0.1),
+                ListTile(
+                  onTap: (){
+                    _openLogoutDialog(context);
+                  },
+                  title: const Text('Logout'),
+                  leading: IconButton(
+                    icon: Icon(Icons.logout),
+                    onPressed: () {
+                    },
+                  ),
+                ),
+                const Divider(height: 0.1),
+                const Padding(padding: EdgeInsets.all(16),
+                  child: Text(
+                      'Version 1.0'
+                  ),)
+              ],
+            ),
+          ),
+          ),
+          body: _homeContent()
       ),
-      drawer: Theme(
-        data: Theme.of(context).copyWith(
-            canvasColor: Colors.white
-        ), child: Drawer(
-        elevation: 2,
-        child: Column(
-          children: <Widget>[
-            const UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey
-              ),
-              accountName: Text('Praveen Chakravarthy'),
-              accountEmail: Text('praveen.chakravarthy@readyassist.in'),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text('Pc'),
-              ),
-            ),
-            ListTile(
-              title: Text('Stocks'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/stocks');
-              },
-              leading: IconButton(
-                icon: Icon(Icons.pending),
-                onPressed: () {},
-              ),
-            ),
-            const Divider(height: 0.1),
-            ListTile(
-              title: const Text('Sold Subscription'),
-              onTap: (){
-                Navigator.popAndPushNamed(context, '/sold_subscription');
-              },
-              leading: IconButton(
-                icon: const Icon(Icons.subscriptions),
-                onPressed: () {
-                  Navigator.popAndPushNamed(context, '/sold_subscription');
-                },
-              ),
-            ),
-            const Divider(height: 0.1),
-            ListTile(
-              title: Text('Sub-Seller'),
-              onTap: () {
-                Navigator.popAndPushNamed(context, '/stocks');
-              },
-              leading: IconButton(
-                icon: Icon(Icons.pending),
-                onPressed: () {},
-              ),
-            ),
-            const Divider(height: 0.1),
-            ListTile(
-              title: Text('Settlement'),
-              leading: IconButton(
-                icon: Icon(Icons.monetization_on),
-                onPressed: () {
-                },
-              ),
-            ),
-            const Divider(height: 0.1),
-            ListTile(
-              title: Text('Support'),
-              leading: IconButton(
-                icon: Icon(Icons.support),
-                onPressed: () {
-                },
-              ),
-            ),
-            const Divider(height: 0.1),
-            ListTile(
-              onTap: (){
-                _openLogoutDialog(context);
-              },
-              title: const Text('Logout'),
-              leading: IconButton(
-                icon: Icon(Icons.logout),
-                onPressed: () {
-                },
-              ),
-            ),
-            const Divider(height: 0.1),
-            const Padding(padding: EdgeInsets.all(16),
-            child: Text(
-              'Version 1.0'
-            ),)
-          ],
-        ),
-      ),
-      ),
-      body: _homeContent()
     );
+  }
+
+  onBackPressed(){
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    });
   }
 
 //   Future<void> scanQR() async {
@@ -318,11 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: EdgeInsets.all(10),
                                   child: ElevatedButton(
                                     onPressed: () => {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => const Plans(),
-                                          )),
+                                     Navigator.pushNamed(context, '/plans')
                                     },
                                     child: const Text('Proceed'),
                                     style: ElevatedButton.styleFrom(
