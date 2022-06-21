@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/screens/digital_sale/subscription.dart';
-import 'package:flutter_app/screens/plans/plans.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -26,177 +25,183 @@ class _HomeScreenState extends State<HomeScreen> {
         onBackPressed(); // Action to perform on back pressed
         return false;
       },
-      child: Scaffold(
-          key: _scaffold,
-          appBar: AppBar(
-            backgroundColor: Colors.blueGrey,
-            centerTitle: false,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.dashboard, size: 30,), onPressed: () {
-              _scaffold.currentState!.openDrawer();
-            },
-            ),
-            title: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(flex: 3,
-                      child: Text(
+      child: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+            key: _scaffold,
+            appBar: AppBar(
+              backgroundColor: Colors.blueGrey,
+              centerTitle: false,
+              elevation: 0,
+              leading: Container(
+                margin: EdgeInsets.only(bottom: 12, left: 6),
+                child: IconButton(
+                  icon: const Icon(Icons.dashboard, size: 40,), onPressed: () {
+                  _scaffold.currentState!.openDrawer();
+                },
+                ),
+              ),
+              title: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Expanded(flex: 3,
+                        child: Text(
                           'Dashboard',
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Theme(
-                          data: ThemeData.dark(),
-                          child: Container(
-                            height: 40,
-                            child: DropdownButtonFormField<String>(
-                              isExpanded: true, //just add this property as true
-                              value: subSeller,
-                              icon: Icon(Icons.arrow_drop_down),
-                              elevation: 0,
-                              decoration: InputDecoration(
-                                  enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.blueGrey))),
-                              style: const TextStyle(color: Colors.black),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  subSeller = newValue!;
-                                });
-                              },
-                              items: <String>['Me','Praveen Chakravarthy', 'Renuka']
-                                  .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value,
-                                    maxLines: 1,
-                                    style: TextStyle(color: Colors.white),),
-                                );
-                              }).toList(),
-                            ),
-                          )
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Text(
-                  'Praveen Chakravarthy',
-                  style: TextStyle(color: Colors.white, fontSize: 14.0),
-                ),
-              ],
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Theme(
+                              data: ThemeData.dark(),
+                              child: Container(
+                                height: 40,
+                                child: DropdownButtonFormField<String>(
+                                  isExpanded: true, //just add this property as true
+                                  value: subSeller,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  elevation: 0,
+                                  decoration: const InputDecoration(
+                                      enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.blueGrey))),
+                                  style: const TextStyle(color: Colors.black),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      subSeller = newValue!;
+                                    });
+                                  },
+                                  items: <String>['Me','NaGoo', 'Haritha','Melfa' ]
+                                      .map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value,
+                                        maxLines: 1,
+                                        style: TextStyle(color: Colors.white),),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    'Praveen Chakravarthy',
+                    style: TextStyle(color: Colors.white, fontSize: 14.0),
+                  ),
+                ],
+              ),
             ),
-          ),
-          drawer: Theme(
-            data: Theme.of(context).copyWith(
-                canvasColor: Colors.white
-            ), child: Drawer(
-            elevation: 2,
-            child: Column(
-              children: <Widget>[
-                const UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(
-                      color: Colors.blueGrey
+            drawer: Theme(
+              data: Theme.of(context).copyWith(
+                  canvasColor: Colors.white
+              ), child: Drawer(
+              elevation: 2,
+              child: Column(
+                children: <Widget>[
+                  const UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(
+                        color: Colors.blueGrey
+                    ),
+                    accountName: Text('Praveen Chakravarthy'),
+                    accountEmail: Text('praveen.chakravarthy@readyassist.in'),
+                    currentAccountPicture: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Text('Pc'),
+                    ),
                   ),
-                  accountName: Text('Praveen Chakravarthy'),
-                  accountEmail: Text('praveen.chakravarthy@readyassist.in'),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Text('Pc'),
+                  ListTile(
+                    title: Text('Stocks'),
+                    onTap: () {
+                      Navigator.popAndPushNamed(context, '/stocks');
+                    },
+                    leading: IconButton(
+                      icon: Icon(Icons.pending),
+                      onPressed: () {},
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: Text('Stocks'),
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, '/stocks');
-                  },
-                  leading: IconButton(
-                    icon: Icon(Icons.pending),
-                    onPressed: () {},
-                  ),
-                ),
-                const Divider(height: 0.1),
-                ListTile(
-                  title: const Text('Sold Subscription'),
-                  onTap: (){
-                    Navigator.popAndPushNamed(context, '/sold_subscription');
-                  },
-                  leading: IconButton(
-                    icon: const Icon(Icons.subscriptions),
-                    onPressed: () {
+                  const Divider(height: 0.1),
+                  ListTile(
+                    title: const Text('Sold Subscription'),
+                    onTap: (){
                       Navigator.popAndPushNamed(context, '/sold_subscription');
                     },
+                    leading: IconButton(
+                      icon: const Icon(Icons.subscriptions),
+                      onPressed: () {
+                        Navigator.popAndPushNamed(context, '/sold_subscription');
+                      },
+                    ),
                   ),
-                ),
-                const Divider(height: 0.1),
-                ListTile(
-                  title: Text('Sub-Seller'),
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, '/sub_seller');
-                  },
-                  leading: IconButton(
-                    icon: Icon(Icons.pending),
-                    onPressed: () {},
+                  const Divider(height: 0.1),
+                  ListTile(
+                    title: Text('Sub-Seller'),
+                    onTap: () {
+                      Navigator.popAndPushNamed(context, '/sub_seller');
+                    },
+                    leading: IconButton(
+                      icon: Icon(Icons.pending),
+                      onPressed: () {},
+                    ),
                   ),
-                ),
-                const Divider(height: 0.1),
-                ListTile(
-                  title: Text('Settlement'),
-                  onTap: (){
-                    Navigator.pushNamed(context, '/settlement');
-                  },
-                  leading: IconButton(
-                    icon: Icon(Icons.monetization_on),
-                    onPressed: () {
+                  const Divider(height: 0.1),
+                  ListTile(
+                    title: Text('Settlement'),
+                    onTap: (){
                       Navigator.pushNamed(context, '/settlement');
                     },
+                    leading: IconButton(
+                      icon: Icon(Icons.monetization_on),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/settlement');
+                      },
+                    ),
                   ),
-                ),
-                const Divider(height: 0.1),
-                ListTile(
-                  title: Text('Support'),
-                  onTap: (){
-                    Navigator.pushNamed(context, '/support');
-                  },
-                  leading: IconButton(
-                    icon: Icon(Icons.support),
-                    onPressed: () {
+                  const Divider(height: 0.1),
+                  ListTile(
+                    title: Text('Support'),
+                    onTap: (){
                       Navigator.pushNamed(context, '/support');
                     },
+                    leading: IconButton(
+                      icon: Icon(Icons.support),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/support');
+                      },
+                    ),
                   ),
-                ),
-                const Divider(height: 0.1),
-                ListTile(
-                  onTap: (){
-                    _openLogoutDialog(context);
-                  },
-                  title: const Text('Logout'),
-                  leading: IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () {
+                  const Divider(height: 0.1),
+                  ListTile(
+                    onTap: (){
+                      _openLogoutDialog(context);
                     },
+                    title: const Text('Logout'),
+                    leading: IconButton(
+                      icon: Icon(Icons.logout),
+                      onPressed: () {
+                      },
+                    ),
                   ),
-                ),
-                const Divider(height: 0.1),
-                const Padding(padding: EdgeInsets.all(16),
-                  child: Text(
-                      'Version 1.0'
-                  ),)
-              ],
+                  const Divider(height: 0.1),
+                  const Padding(padding: EdgeInsets.all(16),
+                    child: Text(
+                        'Version 1.0'
+                    ),)
+                ],
+              ),
             ),
-          ),
-          ),
-          body: _homeContent()
-      ),
+            ),
+            body: _homeContent()
+        ),
+      )
     );
   }
 
@@ -345,20 +350,28 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(
                                 height: 20,
                               ),
-                               Container(
-                                 margin: EdgeInsets.only(right: 20, left: 20),
-                                 child: Padding(
-                                   padding: EdgeInsets.all(10),
-                                   child: TextFormField(
-                                     obscureText: false,
-                                     keyboardType: TextInputType.multiline,
-                                     decoration: InputDecoration(
-                                       border: OutlineInputBorder(
-                                           borderRadius: BorderRadius.circular(6),
-                                           borderSide: BorderSide.none),
-                                       fillColor: Colors.grey.withOpacity(0.1),
-                                       filled: true,
-                                       hintText: 'Enter Code here',
+                               GestureDetector(
+                                 onTap: (){
+                                   FocusScopeNode currentFocus = FocusScope.of(context);
+                                   if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+                                     currentFocus.focusedChild!.unfocus();
+                                     }
+                                   },
+                                 child: Container(
+                                   margin: EdgeInsets.only(right: 20, left: 20),
+                                   child: Padding(
+                                     padding: EdgeInsets.all(10),
+                                     child: TextFormField(
+                                       obscureText: false,
+                                       keyboardType: TextInputType.multiline,
+                                       decoration: InputDecoration(
+                                         border: OutlineInputBorder(
+                                             borderRadius: BorderRadius.circular(6),
+                                             borderSide: BorderSide.none),
+                                         fillColor: Colors.grey.withOpacity(0.1),
+                                         filled: true,
+                                         hintText: 'Enter Code here',
+                                       ),
                                      ),
                                    ),
                                  ),

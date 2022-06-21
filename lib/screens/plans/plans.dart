@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api/apis.dart';
+import 'package:get/get.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class Plans extends StatefulWidget {
   const Plans({Key? key}) : super(key: key);
@@ -9,6 +11,8 @@ class Plans extends StatefulWidget {
 }
 
 class _PlansState extends State<Plans> {
+  final Razorpay _razorpay = Razorpay();
+
   final ApiService _apiService = ApiService.create();
   bool click = true;
   int? selectedIndex;
@@ -19,11 +23,36 @@ class _PlansState extends State<Plans> {
   @override
   void initState() {
     super.initState();
-    _getAllPlans();
+    // _getAllPlans();
+    // _razorpay = new Razorpay();
+
+
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // Do something when payment succeeds
+    print(response);
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Do something when payment fails
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet was selected
   }
 
   _getAllPlans() async {
-
     // Map<String, dynamic> payload = {
     //   'where': {
     //   'for': 1,
@@ -44,7 +73,9 @@ class _PlansState extends State<Plans> {
         backgroundColor: Colors.blueGrey[900],
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), onPressed: () {Navigator.pop(context);},
+          icon: const Icon(Icons.arrow_back), onPressed: () {
+          Navigator.pop(context);
+        },
         ),
         title: const Text('Plans'),
       ),
@@ -101,7 +132,8 @@ class _PlansState extends State<Plans> {
               physics: ScrollPhysics(),
               itemBuilder: (BuildContext context, int i) {
                 return GestureDetector(
-                  onTap: () => {
+                  onTap: () =>
+                  {
                     setState(() {
                       selectedIndex = i;
                     }),
@@ -123,7 +155,7 @@ class _PlansState extends State<Plans> {
                         borderRadius: BorderRadius.circular(6),
                         side: BorderSide(color: Colors.black12, width: 0.5)),
                     color: selectedIndex == i
-                        ? const Color.fromARGB(255, 246, 246, 246)
+                        ? Colors.blueGrey[200]
                         : null,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -135,7 +167,7 @@ class _PlansState extends State<Plans> {
                             children: [
                               const CircleAvatar(
                                   backgroundColor:
-                                      Color.fromARGB(255, 246, 246, 246)),
+                                  Color.fromARGB(255, 246, 246, 246)),
                               const VerticalDivider(
                                 width: 12,
                               ),
@@ -165,7 +197,7 @@ class _PlansState extends State<Plans> {
                                             color: Colors.grey,
                                             fontSize: 12,
                                             decoration:
-                                                TextDecoration.lineThrough,
+                                            TextDecoration.lineThrough,
                                           )),
                                     ],
                                   )
@@ -196,156 +228,193 @@ class _PlansState extends State<Plans> {
     );
   }
 
-  Widget buildInsertButton() => Padding(
-    padding: EdgeInsets.all(16),
+  Widget buildInsertButton() =>
+      Padding(
+        padding: EdgeInsets.all(16),
 
-    child: ElevatedButton(
-      onPressed: () =>
-      {
-        _openPaymentDialog(context)
-      },
-      child: const Text('Payment'),
-      style: ElevatedButton.styleFrom(
-          primary: Colors.blueGrey[900],
-          minimumSize: Size.fromHeight(40),
-          shadowColor: Colors.white,
-          textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.normal)),
-    ),
-  );
+        child: ElevatedButton(
+          onPressed: () =>
+          {
+            if(selectedIndex != null){
 
-  void _openPaymentDialog(BuildContext context) {
+              _openPaymentDialog(context)
+
+            } else {
+              Get.snackbar('INFO', 'Please Select a plan',
+                  snackPosition: SnackPosition.BOTTOM,
+                  colorText: Colors.black,
+                  backgroundColor: Colors.grey[100]
+              ),
+            }
+          },
+          child: const Text('Payment'),
+          style: ElevatedButton.styleFrom(
+              primary: Colors.blueGrey[900],
+              minimumSize: Size.fromHeight(40),
+              shadowColor: Colors.white,
+              textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal)),
+        ),
+      );
+
+
+
+  _openPaymentDialog(context) {
+    int type = 0;
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          int type = 0;
-          return SimpleDialog(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: 16, right: 16, top: 8, bottom: 8),
-                          child: Text(
-                            'CAR BASIC',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.05),
+      context: context,
+      builder: (context) {
+        // add StatefulBuilder to return value
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return SimpleDialog(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 16, right: 16, top: 8, bottom: 8),
+                            child: Text(
+                              'CAR BASIC',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.05),
+                            ),
                           ),
                         ),
-                      ),
-                      const Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          child: Text(
-                            'Rs. 1990',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.05),
+                        const Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 16, right: 16),
+                            child: Text(
+                              'Rs. 1990',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.05),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(
-                              child: GestureDetector(
-                            onTap: () => {
-                              setState(() {
-                                type = 1;
-                              }),
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    type = 1;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    'Cash',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 15),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      type = 1;
+                                    });
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Cash',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                    ),
                                   ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor:
-                                      type == 1 ? Colors.blueGrey : null,
-                                  side: const BorderSide(
-                                      width: 0.2, color: Colors.grey),
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor:
+                                    type == 1 ? Colors.blueGrey : null,
+                                    side: const BorderSide(
+                                        width: 0.2, color: Colors.grey),
+                                  ),
                                 ),
                               ),
                             ),
-                          )),
-                          const SizedBox(width: 15),
-                          Expanded(
-                              child: GestureDetector(
-                            onTap: () => {
-                              setState(() {
-                                type = 2;
-                              }),
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    type = 2;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    'Online',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 15),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      type = 2;
+                                    });
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Online',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                    ),
                                   ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor:
-                                      type == 2 ? Colors.blueGrey : null,
-                                  side: const BorderSide(
-                                      width: 0.2, color: Colors.grey),
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor:
+                                    type == 2 ? Colors.blueGrey : null,
+                                    side: const BorderSide(
+                                        width: 0.2, color: Colors.grey),
+                                  ),
                                 ),
                               ),
                             ),
-                          )),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () => {},
-                        child: const Text('Confirm'),
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.blueGrey[900],
-                            minimumSize: Size.fromHeight(40),
-                            shadowColor: Colors.white,
-                            textStyle: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.normal)),
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () =>
+                          {
+                           if(type > 0){
+                             _directToRazorPay()
+                           } else {
+                             Get.snackbar('INFO', 'Please Select a Payment Type',
+                                 snackPosition: SnackPosition.BOTTOM,
+                                 colorText: Colors.black,
+                                 backgroundColor: Colors.grey[100]
+                             ),
+                           },
+                          },
+                          child: const Text('Confirm'),
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[900],
+                              minimumSize: Size.fromHeight(40),
+                              shadowColor: Colors.white,
+                              textStyle: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.normal)),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
-          );
-        });
+                )
+              ],
+            );
+          },
+        );
+      },
+    );
+
+  }
+
+  void _directToRazorPay() {
+    var options = {
+      "key": "rzp_test_VkKxyQ16f3DVBv",
+      "amount": 20000,
+      "name": "Readyassist",
+      "description": "testing plans",
+      "currency": "INR"
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
+

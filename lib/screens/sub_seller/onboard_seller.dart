@@ -54,7 +54,7 @@ class _OnboardSellerState extends State<OnboardSeller> {
             alignment: Alignment.topLeft,
             child: Text(
               'Personal Details',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 0.05),
             ),
           ),
           SizedBox(
@@ -180,7 +180,8 @@ class _OnboardSellerState extends State<OnboardSeller> {
                     );
                   }).toList(),
                 ),
-              ))
+              ),
+              ),
             ],
           ),
           SizedBox(
@@ -598,7 +599,7 @@ class _OnboardSellerState extends State<OnboardSeller> {
             alignment: Alignment.topLeft,
             child: Text(
               'Bank Details',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 0.05),
             ),
           ),
           SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/screens/Splash/splash.dart';
 import 'package:flutter_app/screens/home/home_screen.dart';
 import 'package:flutter_app/screens/plans/plans.dart';
 import 'package:flutter_app/screens/settlement/Earnings/earnings.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_app/screens/stocks/stocks.dart';
 import 'package:flutter_app/screens/sub_seller/onboard_seller.dart';
 import 'package:flutter_app/screens/sub_seller/sub_seller.dart';
 import 'package:flutter_app/screens/support/support.dart';
+import 'package:get/get.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,12 +40,13 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown
     ]);
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Seller App',
       theme: _themeData,
       routes: {
-        '/': (context) => const SignIn(),
+        '/': (context) => const Splash(),
+        '/signin': (context) => const SignIn(),
         '/home': (context) => const HomeScreen(),
         '/plans': (context) => const Plans(),
         '/stocks': (context) => const Stocks(),

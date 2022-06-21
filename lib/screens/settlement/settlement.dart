@@ -244,8 +244,7 @@ class _SettlementState extends State<Settlement> {
                     ),
                   ),
                 ),
-              )
-
+              ),
             ],
           )
         )
