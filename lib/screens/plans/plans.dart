@@ -35,7 +35,7 @@ class _PlansState extends State<Plans> {
   @override
   void dispose() {
     super.dispose();
-    _razorpay.clear();
+    // _razorpay.clear();
   }
 
 
@@ -155,7 +155,7 @@ class _PlansState extends State<Plans> {
                         borderRadius: BorderRadius.circular(6),
                         side: BorderSide(color: Colors.black12, width: 0.5)),
                     color: selectedIndex == i
-                        ? Colors.blueGrey[200]
+                        ? Colors.blueGrey[100]
                         : null,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -165,9 +165,9 @@ class _PlansState extends State<Plans> {
                           // A Row for the top
                           Row(
                             children: [
-                              const CircleAvatar(
+                               CircleAvatar(
                                   backgroundColor:
-                                  Color.fromARGB(255, 246, 246, 246)),
+                                  Colors.black12),
                               const VerticalDivider(
                                 width: 12,
                               ),
@@ -325,12 +325,14 @@ class _PlansState extends State<Plans> {
                                     child: Text(
                                       'Cash',
                                       style: TextStyle(
-                                          color: Colors.black, fontSize: 15),
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          letterSpacing: 0.05),
                                     ),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     backgroundColor:
-                                    type == 1 ? Colors.blueGrey : null,
+                                    type == 1 ? Colors.blueGrey[100] : null,
                                     side: const BorderSide(
                                         width: 0.2, color: Colors.grey),
                                   ),
@@ -352,12 +354,14 @@ class _PlansState extends State<Plans> {
                                     child: Text(
                                       'Online',
                                       style: TextStyle(
-                                          color: Colors.black, fontSize: 15),
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          letterSpacing: 0.05),
                                     ),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     backgroundColor:
-                                    type == 2 ? Colors.blueGrey : null,
+                                    type == 2 ? Colors.blueGrey[100] : null,
                                     side: const BorderSide(
                                         width: 0.2, color: Colors.grey),
                                   ),
@@ -366,32 +370,41 @@ class _PlansState extends State<Plans> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () =>
-                          {
-                           if(type > 0){
-                             _directToRazorPay()
-                           } else {
-                             Get.snackbar('INFO', 'Please Select a Payment Type',
-                                 snackPosition: SnackPosition.BOTTOM,
-                                 colorText: Colors.black,
-                                 backgroundColor: Colors.grey[100]
-                             ),
-                           },
-                          },
-                          child: const Text('Confirm'),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.blueGrey[900],
-                              minimumSize: Size.fromHeight(40),
-                              shadowColor: Colors.white,
-                              textStyle: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.normal)),
-                        ),
                       ],
                     ),
                   ),
-                )
+                ),
+                Padding(padding: EdgeInsets.all(5),
+                child: ElevatedButton(
+                  onPressed: () =>
+                  {
+                    if(type == 2){
+                      _directToRazorPay()
+                    } else if(type == 1){
+                      Navigator.pop(context)
+                    } else {
+                      Get.snackbar('INFO', 'Please Select a Payment Type',
+                          snackPosition: SnackPosition.BOTTOM,
+                          colorText: Colors.black,
+                          backgroundColor: Colors.grey[100]
+                      ),
+                    },
+                  },
+                  child: const Text(
+                    'Confirm',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    primary: Colors.blueGrey[900],
+                    minimumSize: Size.fromHeight(40),
+                    shadowColor: Colors.white,
+                  ),
+                ),
+                ),
               ],
             );
           },

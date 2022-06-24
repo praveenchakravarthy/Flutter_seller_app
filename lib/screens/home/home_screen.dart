@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        // scanQR();
+                                        Navigator.pushNamed(context, '/qr_scan');
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(

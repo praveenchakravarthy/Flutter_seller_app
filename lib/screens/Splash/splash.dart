@@ -17,11 +17,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 3),
-            ()=>Navigator.pushReplacement(context,
-            MaterialPageRoute(builder:
-                (context) =>
-                SignIn()
-            )
+            ()=>Navigator.pushReplacementNamed(context, '/signin'
         )
     );
   }
@@ -36,6 +32,7 @@ class _SplashState extends State<Splash> {
             style: TextStyle(fontSize: 40,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
+            letterSpacing: 0.05,
             decoration: TextDecoration.none),
           ),
         )

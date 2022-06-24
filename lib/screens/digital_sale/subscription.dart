@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api/apis.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
-import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class Subscription extends StatefulWidget {
@@ -9,20 +8,21 @@ class Subscription extends StatefulWidget {
   const Subscription({Key? key, required this.type}) : super(key: key);
 
   @override
-  _SubscriptionState createState() => _SubscriptionState();
+  _SubscriptionState createState() => _SubscriptionState(type);
 }
 
 class _SubscriptionState extends State<Subscription> {
   final Razorpay _razorpay = Razorpay();
   final ApiService _apiService = ApiService.create();
-  final _bottomForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _bottomForm = GlobalKey<FormState>();
+
   List _subscriptionList = [];
   var otpFocusNode = FocusNode();
   String _mobileNo = '';
   String _otpValue = '';
   bool _otpEnabled = false;
-  // _SubscriptionState(this.type);
-  // int type;
+  _SubscriptionState(this.type);
+  int type;
 
 
   @override
@@ -39,6 +39,17 @@ class _SubscriptionState extends State<Subscription> {
     Map<String, dynamic> payload = {'sellerId': 24, 'clientId': 1};
     var res = await _apiService.subscriptionPlanList(payload);
     setState(() {_subscriptionList = res.body['plans'];});
+  }
+
+  _sendOtp(setState) {
+    // if (currentState!.validate()) {
+      // _bottomForm.currentState!.save();
+      setState(() {
+        _otpEnabled = !_otpEnabled;
+        type = 0;
+        // FocusScope.of(context).requestFocus(otpFocusNode);
+      });
+    // }
   }
 
   @override
@@ -244,9 +255,11 @@ class _SubscriptionState extends State<Subscription> {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      isDismissible: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState){
+
+        return StatefulBuilder(builder: (BuildContext context, StateSetter setState){
 
           return Form(
             key: _bottomForm,
@@ -289,8 +302,15 @@ class _SubscriptionState extends State<Subscription> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: TextField(
+                        child: TextFormField(
                           keyboardType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ) {
+                              return 'Please enter valid Name';
+                            }
+                            return null;
+                          },
                           decoration: InputDecoration(
                             // contentPadding: EdgeInsets.symmetric(vertical: 30.0),
                               isDense: true,
@@ -301,7 +321,8 @@ class _SubscriptionState extends State<Subscription> {
                               hintText: 'Customer Name',
                               hintStyle: TextStyle(
                                   fontSize: 14
-                              )
+                              ),
+
                           ),
                         ),
                       ),
@@ -310,13 +331,13 @@ class _SubscriptionState extends State<Subscription> {
                         child: TextFormField(
                           obscureText: false,
                           keyboardType: TextInputType.emailAddress,
-                          // validator: (value) {
-                          //   if (value == null ||
-                          //       value.isEmpty ) {
-                          //     return 'Please enter valid Email';
-                          //   }
-                          //   return null;
-                          // },
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ) {
+                              return 'Please enter valid Email';
+                            }
+                            return null;
+                          },
                           decoration: InputDecoration(
                               border:  OutlineInputBorder(borderRadius:BorderRadius.circular(18),
                                   borderSide:BorderSide.none),
@@ -334,6 +355,7 @@ class _SubscriptionState extends State<Subscription> {
                         padding: EdgeInsets.all(8),
                         child: TextFormField(
                           obscureText: false,
+                          // controller: _controller,
                           keyboardType: TextInputType.phone,
                           maxLength: 10,
                           validator: (value) {
@@ -356,12 +378,10 @@ class _SubscriptionState extends State<Subscription> {
                             ),
                             counterText: "",
                             suffixIcon: widget.type == 1 ? IconButton(
-                              icon: Icon(Icons.send), onPressed: () {
-                              _sendOtp();
-                              // setState(() {
-                              //   _otpEnabled = !_otpEnabled;
-                              // });
-                            },
+                              icon: Icon(Icons.send),
+                              onPressed: () {
+                                _sendOtp(setState);
+                             },
                             ) : null,
                           ),
                         ),
@@ -471,15 +491,6 @@ class _SubscriptionState extends State<Subscription> {
         );
       },
     );
-  }
-
-  _sendOtp() {
-    if(_bottomForm.currentState!.validate()){
-      setState(() {
-        _otpEnabled = !_otpEnabled;
-        FocusScope.of(context).requestFocus(otpFocusNode);
-      });
-    }
   }
 
   void _directToRazorPay() {

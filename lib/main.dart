@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/screens/Splash/splash.dart';
 import 'package:flutter_app/screens/home/home_screen.dart';
+import 'package:flutter_app/screens/home/qr_scanner.dart';
 import 'package:flutter_app/screens/plans/plans.dart';
 import 'package:flutter_app/screens/settlement/Earnings/earnings.dart';
 import 'package:flutter_app/screens/settlement/settlement.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         '/settlement': (context) => const Settlement(),
         '/earnings': (context) => const Earnings(),
         '/support': (context) => const Support(),
+        '/qr_scan': (context) => const QRScan(),
       },
     );
   }

@@ -23,6 +23,16 @@ class _SignInState extends State<SignIn> {
       FocusScope.of(context).requestFocus(otpFocusNode);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    // FocusScope.of(context).unfocus();
+
+    // var currentFocus = FocusScope.of(context);
+    // if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+    // }
+  }
   
   @override
   Widget build(BuildContext context) {
