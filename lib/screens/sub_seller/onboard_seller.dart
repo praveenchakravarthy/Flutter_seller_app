@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class OnboardSeller extends StatefulWidget {
   const OnboardSeller({Key? key}) : super(key: key);
@@ -11,6 +14,11 @@ class OnboardSeller extends StatefulWidget {
 }
 
 class _OnboardSellerState extends State<OnboardSeller> {
+
+  TextEditingController _locationController = TextEditingController();
+  var uuid = Uuid();
+  String sessionToken = '1234';
+  List<dynamic> placesList = [];
 
   final _sellerForm = GlobalKey<FormState>();
   String genderType = 'Male';
@@ -31,6 +39,48 @@ class _OnboardSellerState extends State<OnboardSeller> {
     'Maharastra',
     'Delhi',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _locationController.addListener(() {
+      onChange();
+    });
+  }
+
+  void onChange() {
+
+    if(sessionToken == null){
+      setState((){
+        sessionToken = uuid.v4();
+          });
+    }
+
+    getLocationPlaces(_locationController.text);
+
+  }
+
+  void getLocationPlaces(String text) async {
+
+    String KPLACES_API_KEY="AIzaSyC0KYKIjJ4jlHK7Vyo-yYSdffnvvx05vw4";
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request= '$baseURL?input=$text&key=$KPLACES_API_KEY&sessiontoken=$sessionToken';
+
+    var response = await http.get(Uri.parse(request));
+
+    print(response.body.toString());
+
+    if(response == 200){
+
+      setState((){
+        placesList = jsonDecode(response.body.toString()) ['predictions'];
+      });
+    } else {
+      throw Exception('failed');
+    }
+
+  }
+
 
 
   @override
@@ -501,6 +551,7 @@ class _OnboardSellerState extends State<OnboardSeller> {
             TextFormField(
               obscureText: false,
               keyboardType: TextInputType.text,
+              controller: _locationController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your Location';
@@ -526,6 +577,13 @@ class _OnboardSellerState extends State<OnboardSeller> {
                 counterText: "",
               ),
             ),
+            // ListView.builder(
+            //         itemCount:placesList.length,
+            //         itemBuilder:(context,index){
+            //           return ListTile(
+            //             title:Text(placesList[index]['description']),
+            //           );
+            //         }),
             SizedBox(
               height: 10,
             ),

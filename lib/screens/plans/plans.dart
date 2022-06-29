@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api/apis.dart';
 import 'package:get/get.dart';
@@ -11,19 +14,19 @@ class Plans extends StatefulWidget {
 }
 
 class _PlansState extends State<Plans> {
+  var codeData;
   final Razorpay _razorpay = Razorpay();
-
   final ApiService _apiService = ApiService.create();
+  TextEditingController _mobileController = TextEditingController();
   bool click = true;
   int? selectedIndex;
-  final List _planList = [
-    'hello', 'dello'
-  ];
+  List _planList = [];
+  var _selectedPlan;
 
   @override
   void initState() {
     super.initState();
-    // _getAllPlans();
+    _getAllPlans();
     // _razorpay = new Razorpay();
 
 
@@ -53,19 +56,21 @@ class _PlansState extends State<Plans> {
   }
 
   _getAllPlans() async {
-    // Map<String, dynamic> payload = {
-    //   'where': {
-    //   'for': 1,
-    // }
-    // };
-    // var res = await _apiService.getActivePlans(payload);
-    // print(res);
-    // print(payload);
-    // setState(() {});
+    Map<String, dynamic> payload = {
+      'filter': jsonEncode({'where': {'for': 1}})
+    };
+
+    var res = await _apiService.getActivePlans(payload);
+    setState(() {
+      _planList = res.body;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    codeData = ModalRoute.of(context)?.settings.arguments;
+
+    print(codeData['reSellerIdOfSubSeller']);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -101,6 +106,7 @@ class _PlansState extends State<Plans> {
                 child: TextFormField(
                   obscureText: false,
                   keyboardType: TextInputType.number,
+                  controller: _mobileController,
                   maxLength: 10,
                   validator: (value) {
                     if (value == null || value.isEmpty || value.length < 10) {
@@ -126,7 +132,7 @@ class _PlansState extends State<Plans> {
         Expanded(
             flex: 8,
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: _planList.length,
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               physics: ScrollPhysics(),
@@ -136,16 +142,8 @@ class _PlansState extends State<Plans> {
                   {
                     setState(() {
                       selectedIndex = i;
+                      _selectedPlan = _planList[i];
                     }),
-                    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    //   content: const Text('Touched'),
-                    //   action: SnackBarAction(
-                    //     label: 'Undo',
-                    //     onPressed: () {
-                    //       // Some code to undo the change.
-                    //     },
-                    //   ),
-                    // ),)
                   },
                   child: Card(
                     margin: const EdgeInsets.only(
@@ -175,8 +173,8 @@ class _PlansState extends State<Plans> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  const Text(
-                                    'Service Name',
+                                   Text(
+                                    '${_planList[i]['name']}',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600),
@@ -184,15 +182,15 @@ class _PlansState extends State<Plans> {
                                   SizedBox(height: 5),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    children: const [
-                                      Text('Rs. 1990',
+                                    children: [
+                                      Text('Rs. ${_planList[i]['exclusiveRate'].toString()}',
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 12)),
                                       VerticalDivider(
                                         width: 10,
                                       ),
-                                      Text('Rs. 1990',
+                                      Text('${_planList[i]['retailRate']}',
                                           style: TextStyle(
                                             color: Colors.grey,
                                             fontSize: 12,
@@ -237,7 +235,15 @@ class _PlansState extends State<Plans> {
           {
             if(selectedIndex != null){
 
-              _openPaymentDialog(context)
+              if(_mobileController.text.isNotEmpty && _mobileController.text.length == 10){
+                _openPaymentDialog(context, _selectedPlan)
+              } else {
+                Get.snackbar('INFO', 'Please Enter Customer Mobile',
+                    snackPosition: SnackPosition.BOTTOM,
+                    colorText: Colors.black,
+                    backgroundColor: Colors.grey[100]
+                ),
+              }
 
             } else {
               Get.snackbar('INFO', 'Please Select a plan',
@@ -260,7 +266,7 @@ class _PlansState extends State<Plans> {
 
 
 
-  _openPaymentDialog(context) {
+  _openPaymentDialog(context, selectedPlan) {
     int type = 0;
     showDialog(
       context: context,
@@ -277,13 +283,13 @@ class _PlansState extends State<Plans> {
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       children: [
-                        const Align(
+                         Align(
                           alignment: Alignment.center,
                           child: Padding(
                             padding: EdgeInsets.only(
                                 left: 16, right: 16, top: 8, bottom: 8),
                             child: Text(
-                              'CAR BASIC',
+                              selectedPlan['name'],
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -291,12 +297,12 @@ class _PlansState extends State<Plans> {
                             ),
                           ),
                         ),
-                        const Align(
+                         Align(
                           alignment: Alignment.center,
                           child: Padding(
                             padding: EdgeInsets.only(left: 16, right: 16),
                             child: Text(
-                              'Rs. 1990',
+                              'Rs. ${selectedPlan['exclusiveRate'].toString()}',
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -379,7 +385,7 @@ class _PlansState extends State<Plans> {
                   onPressed: () =>
                   {
                     if(type == 2){
-                      _directToRazorPay()
+                      _directToRazorPay(selectedPlan['exclusiveRate'])
                     } else if(type == 1){
                       Navigator.pop(context)
                     } else {
@@ -414,10 +420,65 @@ class _PlansState extends State<Plans> {
 
   }
 
-  void _directToRazorPay() {
+  void _serviceDialog(BuildContext context, subscriptionServiceList) => showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return SimpleDialog(
+        children: [
+          SizedBox(
+              width: double.maxFinite,
+              child: Padding(padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: subscriptionServiceList.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          return ListTile(
+                            title: Text(subscriptionServiceList[i]['serviceName'],maxLines: 1,
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
+                            subtitle: Text('service available count is'
+                                ' ${subscriptionServiceList[i]['maxServiceCount'].toString()}',
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                            trailing: Text('Rs. '
+                                ' ${subscriptionServiceList[i]['fixedCharge'].toString()}',
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
+                          );
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: ElevatedButton(
+                            onPressed: () => {
+                              Navigator.pop(context)
+                            },
+                            child:const Text('Ok'),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blueGrey[900],
+                              // padding: EdgeInsets.symmetric(horizontal: 30, vertical: 13),
+                              textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+              )
+          ),
+          // Text('${subscriptionList['serviceName']}')
+        ],
+      );
+    },
+  );
+
+  void _directToRazorPay(selectedPlanPrice) {
     var options = {
       "key": "rzp_test_VkKxyQ16f3DVBv",
-      "amount": 20000,
+      "amount": selectedPlanPrice * 100,
       "name": "Readyassist",
       "description": "testing plans",
       "currency": "INR"

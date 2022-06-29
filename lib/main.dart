@@ -13,11 +13,21 @@ import 'package:flutter_app/screens/sub_seller/onboard_seller.dart';
 import 'package:flutter_app/screens/sub_seller/sub_seller.dart';
 import 'package:flutter_app/screens/support/support.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:logging/logging.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
+  _setUpLogging();
   runApp(const MyApp());
 }
 
+void _setUpLogging() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}}');
+  });
+}
 
 final ThemeData _themeData = ThemeData(
     brightness: Brightness.light,

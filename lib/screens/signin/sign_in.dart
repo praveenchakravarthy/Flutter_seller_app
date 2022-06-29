@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../services/api/apis.dart';
 
 
 class SignIn extends StatefulWidget {
@@ -11,27 +16,60 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController _mobileController = TextEditingController();
+  final GetStorage box = GetStorage();
+  final ApiService _apiService = ApiService.create();
   bool _otpEnable = false;
   var otpFocusNode = FocusNode();
+  String _mobileNo = '';
+  String _otpValue = '';
 
   /*Send Otp*/
   _sendOtp() async {
     if (_formKey.currentState!.validate()) {
-     setState(() {
-       _otpEnable = true;
-     });
+      Map<String, dynamic> payload = {'mobile': _mobileController.text};
+      var res = await _apiService.sendLoginOtp(payload);
+      setState(() {
+        _otpEnable = res.body['success'];
+        _mobileNo = _mobileController.text;
+      });
       FocusScope.of(context).requestFocus(otpFocusNode);
+    }
+  }
+
+  /*Verify Otp*/
+  _signIn() async {
+    if (_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+      Map<String, dynamic> payload = {
+        'mobile': _mobileNo,
+        'otp': int.parse(_otpValue)
+      };
+      var res = await _apiService.verifyLoginOtp(payload);
+
+      if(res.body['success']){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Logged-in Successfully!'),
+              duration: Duration(seconds: 3)),
+        );
+        Map<String, dynamic> user = {
+          'id': res.body['sellerData']['id'],
+          'role': res.body['sellerData']['role'],
+          'name': res.body['sellerData']['name'],
+          'token': res.body['token'],
+          'mobileNo': _mobileNo
+        };
+        box.write('user', json.encode(user));
+        Get.offAndToNamed('/home');
+
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
-    // FocusScope.of(context).unfocus();
-
-    // var currentFocus = FocusScope.of(context);
-    // if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-    // }
   }
   
   @override
@@ -42,14 +80,6 @@ class _SignInState extends State<SignIn> {
       child: Scaffold(
         body: Stack(
           children: [
-            // Container(
-            //   child: SingleChildScrollView(
-            //     child: SizedBox(
-            //         height: MediaQuery.of(context).size.height,
-            //       child:
-            //     ),
-            //   ),
-            // ),
             Column(
               children: [
                 Expanded(
@@ -102,6 +132,7 @@ class _SignInState extends State<SignIn> {
                                 padding: EdgeInsets.all(8),
                                 child: TextFormField(
                                   keyboardType: TextInputType.phone,
+                                  controller: _mobileController,
                                   decoration: const InputDecoration(
                                     isDense: true,
                                     border: OutlineInputBorder(),
@@ -114,7 +145,7 @@ class _SignInState extends State<SignIn> {
                                   validator: (value) {
                                     if (value == null ||
                                         value.isEmpty ||
-                                        value.length < 1) {
+                                        value.length < 10) {
                                       return 'Please enter valid Mobile Number';
                                     }
                                     return null;
@@ -135,6 +166,9 @@ class _SignInState extends State<SignIn> {
                                       labelText: 'Otp',
                                       hintText: 'Enter Otp',
                                     ),
+                                    onSaved: (value) {
+                                      setState(() => _otpValue = value!);
+                                    },
                                   ),
                                 ),
                               ),
@@ -145,11 +179,10 @@ class _SignInState extends State<SignIn> {
                                   ? Align(
                                 alignment: Alignment.bottomRight,
                                 child: Container(
-                                  margin: EdgeInsets.only(left: 10.0),
+                                  margin: EdgeInsets.only(left: 10.0, right: 10.0),
                                   child: ElevatedButton(
                                     onPressed: () => {
-                                      Navigator.popAndPushNamed(
-                                          context, '/home')
+                                      _signIn()
                                     },
                                     child: const Text('SignIn'),
                                     style: ElevatedButton.styleFrom(
@@ -166,12 +199,10 @@ class _SignInState extends State<SignIn> {
                                   : Align(
                                 alignment: Alignment.bottomRight,
                                 child: Container(
-                                  margin: EdgeInsets.only(left: 10.0),
+                                  margin: EdgeInsets.only(left: 10.0, right: 10.0),
                                   child: ElevatedButton(
                                     onPressed: () => {
-                                      // _sendOtp()
-                                      Navigator.popAndPushNamed(
-                                          context, '/home')
+                                       _sendOtp()
                                     },
                                     child: const Text('Send Otp'),
                                     style: ElevatedButton.styleFrom(

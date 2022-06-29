@@ -1,4 +1,5 @@
 import 'package:chopper/chopper.dart';
+import 'package:flutter_app/services/api/header_interceptor.dart';
 import 'package:http/io_client.dart' as http;
 import 'dart:io';
 part 'apis.chopper.dart';
@@ -9,19 +10,26 @@ const String remoteUrl = 'http://dev.readyassist.net/api';
 @ChopperApi()
 abstract class ApiService extends ChopperService {
 
-  @Post(path: '/user/sendLoginOtp')
+  /*Signin page*/
+  @Post(path: '/seller-otp-verifications/mobile/sendOtp')
   Future<Response> sendLoginOtp(@Body() Map<String, dynamic> data);
 
-  @Post(path: '/user/verifyLoginOtp')
+  @Post(path: '/seller-otp-verifications/mobile/login')
   Future<Response> verifyLoginOtp(@Body() Map<String, dynamic> data);
 
+  /*Home Page*/
+  @Post(path: '/sellers/dashboard')
+  Future<Response> dashboardDetails(@Body() Map<String, dynamic> data);
+
+  @Post(path: '/seller-coupons/validateSeller')
+  Future<Response> validateCoupon(@Body() Map<String, dynamic> data);
+
+
+  /*Plans*/
   @Post(path: '/subscription-plans/sellers')
   Future<Response> subscriptionPlanList(@Body() Map<String, dynamic> data);
 
-  @Post(path: '/seller-coupons/validateSeller')
-  Future<Response> validateCoupon(@QueryMap() Map<String, dynamic> parameters);
-
-  @Get(path: '/subscription-plans?filter=')
+  @Get(path: '/subscription-plans')
   Future<Response> getActivePlans(@QueryMap() Map<String, dynamic> parameters);
 
 
@@ -33,7 +41,7 @@ abstract class ApiService extends ChopperService {
       baseUrl: remoteUrl,
       services: [_$ApiService()],
       converter: const JsonConverter(),
-      interceptors: [HttpLoggingInterceptor()],
+      interceptors: [HeaderInterceptor(), HttpLoggingInterceptor()],
       client: http.IOClient(ioc),
       // client: http.IOClient(
       //   HttpClient()..connectionTimeout = const Duration(seconds: 90),

@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/screens/digital_sale/subscription.dart';
 import 'package:flutter_app/values/dimens/dimensions.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import '../../services/api/apis.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -15,11 +20,76 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
+  TextEditingController _secretCode = TextEditingController();
   String subSeller = 'Me';
+  var user, dashboardResponse;
+  // Map<String, dynamic> dashboardResponse = {};
+  int? stock, totalSale, cashReceived;
+  final ApiService _apiService = ApiService.create();
+  final GetStorage box = GetStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    user = jsonDecode(box.read('user'));
+    _callDashboardApi();
+  }
+
+  _callDashboardApi() async {
+
+    Map<String, dynamic> payload = {'sellerId': user['id']};
+    var res = await _apiService.dashboardDetails(payload);
+
+    if(res.body['success']){
+
+      setState(() {
+        dashboardResponse = res.body;
+        box.write('reSellerIdOfSubSeller', res.body['reSellerIdOfSubSeller']);
+        box.write('sellerId', res.body['sellerId']);
+
+      });
+
+    }
+
+  }
+
+
+  validateCode() async {
+    Map<String, dynamic> payload = {
+      'sellerId': user['id'],
+      'sellerRole': user['role'],
+      'secretCode': _secretCode.text
+    };
+
+    var res = await _apiService.validateCoupon(payload);
+
+    if(res.body['success']){
+
+      Map<String, dynamic> data = {
+       "secretCode": _secretCode.text,
+       "printCode": res.body['printCode'],
+        "couponId": res.body['id'],
+        "reSellerIdOfSubSeller": box.read('reSellerIdOfSubSeller')
+      };
+
+      Navigator.pushNamed(context, '/plans', arguments: data);
+      
+    }
+
+  }
+  
+  showToast(String message){
+    ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+          content: Text(message),
+          duration: Duration(seconds: 3)),
+    );
+  }
 
 
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () async {
         onBackPressed(); // Action to perform on back pressed
@@ -93,8 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const Text(
-                    'Praveen Chakravarthy',
+                   Text(
+                       user['name']+' #'+user['id'].toString(),
                     style: TextStyle(color: Colors.white, fontSize: 14.0),
                   ),
                 ],
@@ -107,11 +177,11 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 2,
               child: Column(
                 children: <Widget>[
-                  const UserAccountsDrawerHeader(
-                    decoration: BoxDecoration(
+                   UserAccountsDrawerHeader(
+                    decoration: const BoxDecoration(
                         color: Colors.blueGrey
                     ),
-                    accountName: Text('Praveen Chakravarthy'),
+                    accountName: Text(user['name']),
                     accountEmail: Text('praveen.chakravarthy@readyassist.in'),
                     currentAccountPicture: CircleAvatar(
                       backgroundColor: Colors.white,
@@ -187,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     leading: IconButton(
                       icon: Icon(Icons.logout),
                       onPressed: () {
+
                       },
                     ),
                   ),
@@ -363,6 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                      padding: EdgeInsets.all(10),
                                      child: TextFormField(
                                        obscureText: false,
+                                       controller: _secretCode,
                                        keyboardType: TextInputType.multiline,
                                        decoration: InputDecoration(
                                          border: OutlineInputBorder(
@@ -382,7 +454,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: EdgeInsets.all(10),
                                   child: ElevatedButton(
                                     onPressed: () => {
-                                     Navigator.pushNamed(context, '/plans')
+                                      if(_secretCode.text.isNotEmpty){
+                                        validateCode()
+                                      } else {
+                                       showToast('Enter the Secret code') 
+                                      }
                                     },
                                     child: const Text('Proceed'),
                                     style: ElevatedButton.styleFrom(
@@ -423,7 +499,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(flex: 2, child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
@@ -436,8 +513,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 CircularPercentIndicator(
                                   radius: 30.0,
                                   lineWidth: 5.0,
-                                  percent: 0.10,
-                                  center: new Text("10%"),
+                                  percent: dashboardResponse != null ? (dashboardResponse['target'] / 100) : 0,
+                                  center: Text(dashboardResponse != null ?
+                                  dashboardResponse['target'].toString(): ''),
                                   backgroundColor: (Colors.grey[300])!,
                                   circularStrokeCap: CircularStrokeCap.round,
                                   progressColor: Colors.blueGrey,
@@ -461,8 +539,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   CircularPercentIndicator(
                                     radius: 30.0,
                                     lineWidth: 5.0,
-                                    percent: 0.60,
-                                    center: new Text("6000"),
+                                    percent: dashboardResponse != null ? (dashboardResponse['payable'] / 100000) : 0,
+                                    center: Text(dashboardResponse != null ? dashboardResponse['payable'].toString() : ''),
                                     backgroundColor: (Colors.grey[300])!,
                                     circularStrokeCap: CircularStrokeCap.round,
                                     progressColor: Colors.blueGrey,
@@ -486,8 +564,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   CircularPercentIndicator(
                                     radius: 30.0,
                                     lineWidth: 5.0,
-                                    percent: 0.40,
-                                    center: new Text("40"),
+                                    percent: 0.10,
+                                    center: Text("0"),
                                     backgroundColor: (Colors.grey[300])!,
                                     circularStrokeCap: CircularStrokeCap.round,
                                     progressColor: Colors.blueGrey,
@@ -505,7 +583,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     ),
                     Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
@@ -517,11 +596,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             elevation: 2,
                             color: Colors.white,
                             child: Column(
-                              children: const [
+                              children: [
                                 SizedBox(
                                   height: 15,
                                 ),
-                                Text('0'),
+                                Text(dashboardResponse != null ? dashboardResponse['cashReceived'].toString() : ''),
                                 SizedBox(
                                   height: 5,
                                 ),
@@ -549,11 +628,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               elevation: 2,
                               color: Colors.white,
                               child: Column(
-                                children: const [
+                                children: [
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  Text('0'),
+                                  Text(dashboardResponse != null ? dashboardResponse['stock'].toString() : ''),
                                   SizedBox(
                                     height: 5,
                                   ),
@@ -581,11 +660,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               elevation: 2,
                               color: Colors.white,
                               child: Column(
-                                children: const [
+                                children: [
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  Text('0'),
+                                  Text(dashboardResponse != null ? dashboardResponse['soldSubData'].toString() : ''),
                                   SizedBox(
                                     height: 5,
                                   ),
@@ -632,7 +711,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 35,
                 color: Colors.blueGrey,
                 child: TextButton(
-                  onPressed: () => Navigator.pop(context, 'Yes'),
+                  onPressed: () => {
+                    box.remove('user'),
+                    Navigator.pushReplacementNamed(context, '/signin')
+                  },
                   child: const Text('Yes', style: TextStyle(
                         color: Colors.white
                     ),
