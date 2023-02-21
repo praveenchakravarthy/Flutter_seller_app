@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/api/apis.dart';
+
 class Stocks extends StatefulWidget {
   const Stocks({Key? key}) : super(key: key);
 
@@ -9,8 +11,29 @@ class Stocks extends StatefulWidget {
 
 class _StocksState extends State<Stocks> {
   int? selectedIndex;
+  final ApiService _apiService = ApiService.create();
   bool checked = false;
   List<bool> selectedId = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getStocks();
+  }
+
+  _getStocks()async{
+
+      // Map<String, dynamic> payload = {
+      //   'filter': jsonEncode({'where': {'for': 1}})
+      // };
+      //
+      // var res = await _apiService.getActivePlans(payload);
+      // setState(() {
+      //   _planList = res.body;
+      // });
+
+  }
 
   @override
   Widget build(BuildContext context) {
